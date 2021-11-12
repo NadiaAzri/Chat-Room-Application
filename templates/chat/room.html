@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
-	{{ room_name|json_script:"room-name" }}
+	<!-- {{ room_name|json_script:"room-name" }} -->
     {{ username|json_script:"username" }}
 <div id="frame">
 	<div id="sidepanel">
@@ -55,7 +55,7 @@
 		</div>
 		<div id="contacts">
 			<ul>
-				<li class="contact">
+				<!-- <li class="contact">
 					<div class="wrap">
 						<span class="contact-status online"></span>
 						<img src="http://emilcarlsson.se/assets/louislitt.png" alt="" />
@@ -64,18 +64,22 @@
 							<p class="preview">You just got LITT up, Mike.</p>
 						</div>
 					</div>
-				</li>
+				</li> -->
+				
 				<li class="contact active">
 					<div class="wrap">
 						<span class="contact-status busy"></span>
 						<img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
 						<div class="meta">
-							<p class="name">{{username}}</p>
+							<p class="name">{{rooms.name}}</p>
 							<p class="preview">Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any one of a hundred and forty six other things.</p>
 						</div>
 					</div>
 				</li>
-
+				{{ roomid|json_script:"room-name" }}
+				{{ username|json_script:"username" }}
+				{{ rooms.pk|json_script:"id" }}
+               
 			</ul>
 		</div>
 		<div id="bottom-bar">
@@ -95,14 +99,20 @@
 		</div>
 		<div class="messages">
 			<ul id="chat-log">
-				<!-- <li class="sent">
+				<li class="sent">
 					<img src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
-					<p>How the hell am I supposed to get a jury to believe you when I am not even sure that I do?!</p>
+					<p>How the hell am I supposed to get a jury to believe you when I am not even sure that I do?!
+						<br>
+						<small style="font-size: small;">21 min ago</small>
+					</p>
+					
 				</li>
 				<li class="replies">
 					<img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-					<p>When you're backed against the wall, break the god damn thing down.</p>
-				</li> -->
+					<p>When you're backed against the wall, break the god damn thing down.<br>
+						<small style="font-size: small;">21 min ago</small>
+					</p>
+				</li>
 			</ul>
 		</div>
 		<!-- <div class="message-input">
@@ -121,6 +131,8 @@
 <script>
    const roomName = JSON.parse(document.getElementById('room-name').textContent);
    const username = JSON.parse(document.getElementById('username').textContent);
+   const id = JSON.parse(document.getElementById('id').textContent);
+   
 
     const chatSocket = new ReconnectingWebSocket(
         'ws://'
@@ -131,7 +143,10 @@
     );
 
 	chatSocket.onopen = function(e) {
-	   chatSocket.send(JSON.stringify({'command': 'fetch_messages'}));
+	   chatSocket.send(JSON.stringify({
+		   'command': 'fetch_messages',
+		   'roompk': id
+		}));
 	}
 
     chatSocket.onmessage = function(e) {
@@ -147,11 +162,15 @@
 	};
 
 	function showMessage(data){
+		var time = data['created'];
 		var author = data['author'];
 		var msgListTag = document.createElement('li');
 		var imgTag = document.createElement('img');
 		var pTag = document.createElement('p');
+		var smallTag = document.createElement('small');
 		pTag.textContent = data.content;
+		smallTag.textContent = renderTimestamp(time);
+		
 		imgTag.src = 'http://emilcarlsson.se/assets/harveyspecter.png';
 		if (author === username){
 			msgListTag.className = 'sent';
@@ -160,9 +179,33 @@
 		}
 		msgListTag.appendChild(imgTag);
 		msgListTag.appendChild(pTag);
+		msgListTag.appendChild(smallTag);
+
         document.querySelector('#chat-log').appendChild(msgListTag);
     };
 
+	function renderTimestamp (timestamp){
+    let prefix = "";
+    const timeDiff = Math.round(
+      (new Date().getTime() - new Date(timestamp).getTime()) / 60000
+    );
+    if (timeDiff < 1 ) {
+      // less than one minute ago
+      prefix = "just now...";
+    } else if (timeDiff < 60 && timeDiff > 1 || timeDiff === 1) {
+      // less than sixty minutes ago
+      prefix = `${timeDiff} minutes ago`;
+    } else if (timeDiff < 24 * 60 && timeDiff > 60) {
+      // less than 24 hours ago
+      prefix = `${Math.round(timeDiff / 60)} hours ago`;
+    } else if (timeDiff < 31 * 24 * 60 && timeDiff > 24 * 60) {
+      // less than 7 days ago
+      prefix = `${Math.round(timeDiff / (60 * 24))} days ago`;
+    } else {
+      prefix = `${new Date(timestamp)}`;
+    }
+    return prefix;
+  };
     chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
     };
@@ -181,7 +224,8 @@
             chatSocket.send(JSON.stringify({
                 'message': message,
                 'command': 'new_message',
-                'from': username
+                'from': username,
+				'roompk': String(id)
             }));
             messageInputDom.value = '';
     };
