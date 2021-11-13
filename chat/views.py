@@ -3,8 +3,13 @@ import string
 from django.contrib.auth.models import User
 from .models import Contact, Message, Room
 from django.shortcuts import render
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+
 def index(request):
     return render(request, 'chat/index.html', {})
 
@@ -22,7 +27,7 @@ def create_room_name():
 def room(request, room_name):
     code = create_room_name()
     print(code)
-    user = User.objects.get(username=request.user.username)
+    user = User.objects.get(user_name=request.user.user_name)
     contact = Contact.objects.get(user=user)
     rooms = contact.rooms.all()
     try:
@@ -42,5 +47,5 @@ def room(request, room_name):
         'rooms': rooms,
         'room_name': room_name,
         'valid': valid,
-        'username': request.user.username,
+        'username': request.user.user_name,
     })

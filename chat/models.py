@@ -1,6 +1,10 @@
-from django.contrib.auth.models import User
+
 from django.db import models
 import uuid
+from django.contrib.auth import get_user_model
+from django.conf import settings
+User = get_user_model()
+
 
 class Contact(models.Model):
     user = models.ForeignKey(User, related_name='friends', on_delete=models.CASCADE)
@@ -8,7 +12,7 @@ class Contact(models.Model):
     
 
     def __str__(self):
-        return self.user.username
+        return self.user.user_name
 
 
 class Room(models.Model):
@@ -28,4 +32,4 @@ class Message(models.Model):
     
 
     def __str__(self):
-        return self.contact.user.username
+        return self.contact.user.user_name
