@@ -24,6 +24,7 @@
 <body>
 	<!-- {{ room_name|json_script:"room-name" }} -->
     {{ username|json_script:"username" }}
+	{% if valid %}
 <div id="frame">
 	<div id="sidepanel">
 		<div id="profile">
@@ -66,19 +67,21 @@
 					</div>
 				</li> -->
 				
+				{% for room in rooms %}
 				<li class="contact active">
 					<div class="wrap">
 						<span class="contact-status busy"></span>
 						<img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
 						<div class="meta">
-							<p class="name">{{rooms.name}}</p>
+						<a href="{% url 'room' room.room_name %}">	<p id="room" class="name">{{room.room_name}}</p></a>
 							<p class="preview">Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any one of a hundred and forty six other things.</p>
 						</div>
 					</div>
 				</li>
-				{{ roomid|json_script:"room-name" }}
+				{% endfor %}
+				{{ room_name|json_script:"room-name" }}
 				{{ username|json_script:"username" }}
-				{{ rooms.pk|json_script:"id" }}
+				
                
 			</ul>
 		</div>
@@ -97,6 +100,7 @@
 				 <i class="fa fa-instagram" aria-hidden="true"></i>
 			</div>
 		</div>
+
 		<div class="messages">
 			<ul id="chat-log">
 				<li class="sent">
@@ -115,6 +119,8 @@
 				</li>
 			</ul>
 		</div>
+
+
 		<!-- <div class="message-input">
 			<div class="wrap"> -->
 			<input id="chat-message-input" type="text" placeholder="Write your message...">
@@ -126,14 +132,20 @@
 		</div> -->
 	</div>
 </div>
+{% else %}
+<p class="preview">Invalid URL. Not Found 404</p>
+{% endif %}
 <script src="{% static 'main.js' %}"></script>
 <script src="{% static 'reconnecting-websocket.js' %}"></script>
 <script>
+	//  document.querySelector('#room').onclick = function(e) {
+	// 	console.log({{rooms.pk|safe}})
+    // };
+		
    const roomName = JSON.parse(document.getElementById('room-name').textContent);
    const username = JSON.parse(document.getElementById('username').textContent);
-   const id = JSON.parse(document.getElementById('id').textContent);
+  // const id = JSON.parse(document.getElementById('id').textContent);
    
-
     const chatSocket = new ReconnectingWebSocket(
         'ws://'
         + window.location.host
@@ -145,7 +157,7 @@
 	chatSocket.onopen = function(e) {
 	   chatSocket.send(JSON.stringify({
 		   'command': 'fetch_messages',
-		   'roompk': id
+		   //'roompk': id
 		}));
 	}
 
@@ -225,7 +237,7 @@
                 'message': message,
                 'command': 'new_message',
                 'from': username,
-				'roompk': String(id)
+				//'roompk': id
             }));
             messageInputDom.value = '';
     };

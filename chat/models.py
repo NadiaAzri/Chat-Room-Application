@@ -14,6 +14,7 @@ class Contact(models.Model):
 class Room(models.Model):
     speakers = models.ManyToManyField(Contact, related_name='rooms', blank=True)
     name = models.CharField(max_length=50, blank=True, null=True)
+    room_name = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return "{}".format(self.id)
@@ -24,7 +25,7 @@ class Message(models.Model):
     content = models.TextField()
     chat = models.ForeignKey(Room, related_name='messages', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
-  
+    
 
     def __str__(self):
         return self.contact.user.username
