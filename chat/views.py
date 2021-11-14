@@ -26,10 +26,13 @@ def create_room_name():
 @login_required
 def room(request, room_name):
     code = create_room_name()
-    print(code)
+    
     user = User.objects.get(user_name=request.user.user_name)
     contact = Contact.objects.get(user=user)
-    rooms = contact.rooms.all()
+    rooms = contact.rooms.order_by('-created').all()
+
+    room = Room.objects.get(room_name=room_name)
+    parts = room.speakers.all()
     try:
         room = Room.objects.get(room_name=room_name)
         parts = room.speakers.all()
@@ -37,15 +40,20 @@ def room(request, room_name):
         for part in parts:
             if part.user == request.user:
                 valid = True
-                break
             else:
+                participant = part.user 
+                if valid:
+                    break
                 valid = False
     except ObjectDoesNotExist:
         valid = False
+    
 
     return render(request, 'chat/room.html', {
         'rooms': rooms,
+        'User': user,
         'room_name': room_name,
         'valid': valid,
+        'participant': participant,
         'username': request.user.user_name,
     })

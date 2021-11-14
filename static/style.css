@@ -59,7 +59,7 @@ body {
     }
   }
   #frame #sidepanel #profile.expanded .wrap {
-    height: 210px;
+    /* height: 210px; */
     line-height: initial;
   }
   #frame #sidepanel #profile.expanded .wrap p {

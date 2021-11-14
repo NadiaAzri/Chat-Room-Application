@@ -24,10 +24,10 @@ class ChatConsumer(WebsocketConsumer):
        # author = 'admin'
         author = data['from']
         author_user = User.objects.filter(user_name=author)[0]
-        #message = Message.objects.create(author=author_user, content=data['message']) 
+        # message = Message.objects.create(author=author_user, content=data['message']) 
         contact = Contact.objects.filter(user=author_user)[0]
         room = Room.objects.get(room_name=self.scope['url_route']['kwargs']['room_name'])
-        print(room)
+        # print(room)
         message = Message.objects.create(contact=contact, content=data['message'], chat=room)
         content = {
             'command': 'new_message',
