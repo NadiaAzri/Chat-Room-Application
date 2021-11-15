@@ -1,5 +1,8 @@
 import random
 import string
+from datetime import  datetime
+from django.http.response import HttpResponse
+from django.views import View
 from django.contrib.auth.models import User
 from .models import Contact, Message, Room
 from django.shortcuts import render
@@ -57,3 +60,19 @@ def room(request, room_name):
         'participant': participant,
         'username': request.user.user_name,
     })
+
+
+
+# class ApproveEndorsement(View):
+#      def get(self, request):
+#         pama1 =request.GET.get('email')
+#         pama2 =request.GET.get('name')
+#         pama3 =request.GET.get('date')
+#         print(pama1)
+#         print(pama2)
+#         print(pama3)
+#         birth_date = datetime(1998, 2, 23)
+#         end_date = datetime(2021, 10, 24)
+#         age = end_date - birth_date
+#         print(age/365)
+#         return HttpResponse('')

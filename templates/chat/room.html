@@ -40,7 +40,7 @@
 						<li id="status-offline"><span class="status-circle"></span> <p>Offline</p></li>
 					</ul>
 				</div>
-		{{ User.avatar.url|json_script:"sentImg" }}
+		       
 
 				<div id="expanded">
 					<a href="{% url 'custom_auth:logout' %}" style="color: aliceblue;"><i class="fa fa-edit" aria-hidden="true"></i>
@@ -73,27 +73,26 @@
 				</li> -->
 				
 				{% for room in rooms %}
-				<li class="contact active">
-					<div class="wrap">
-						<span class="contact-status busy"></span>
-						
-						{% for part in room.speakers.all%}
+				<li id="{{room.room_name}}" class="contact">
+					{% for part in room.speakers.all%}
 						{% if part.user != User %}
-						<img src="{{part.user.avatar.url}}" alt="" />
-						
-
-						<div class="meta">
-						<a href="{% url 'chat:room' room.room_name %}" style="color: aliceblue;">	<p id="room" class="name">{{part.user.user_name}}</p></a>
-							<p class="preview">Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any one of a hundred and forty six other things.</p>
-						</div>
-						{%endif%}
-						{%endfor%}
-					</div>
+						  <a href="{% url 'chat:room' room.room_name %}" style="color: aliceblue;">	
+							<div class="wrap">
+								<span class="contact-status busy"></span>
+								<img src="{{part.user.avatar.url}}" alt="" />
+								<div class="meta">
+									<p onclick="activeToggle('{{room.room_name}}')"  id="room" class="name">{{part.user.user_name}}</p>
+									<p class="preview">Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any one of a hundred and forty six other things.</p>
+								</div>
+							</div>
+                         </a>
+					   {%endif%}
+					{%endfor%}
 				</li>
 				{% endfor %}
 				{{ room_name|json_script:"room-name" }}
 				{{ username|json_script:"username" }}
-				
+				{{ User.avatar.url|json_script:"sentImg" }}
                
 			</ul>
 		</div>

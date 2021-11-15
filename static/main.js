@@ -32,7 +32,22 @@ $("#status-options ul li").click(function() {
 	
 	$("#status-options").removeClass("active");
 });
-
+function activeToggle(room_name_query) {
+	const row = document.getElementById(room_name_query);
+	console.log(room_name_query)
+    if (room-name === room_name_query){
+		if (row.classList.contains('active')) {
+			
+		} else {
+			row.classList.add('active');
+		}
+	}else{
+		if (row.classList.contains('active')) {
+			row.classList.remove('active');
+		} 
+	}
+	
+}
 // function newMessage() {
 // 	message = $(".message-input input").val();
 // 	if($.trim(message) == '') {
