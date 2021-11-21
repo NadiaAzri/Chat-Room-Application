@@ -6,6 +6,7 @@ from .models import Contact, Message, Room
 
 User = get_user_model()
 
+#TODO: use asgi and wsgi together 
 
 class ChatConsumer(WebsocketConsumer):
 
