@@ -39,7 +39,7 @@ class ProfileUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     user_name = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=150, blank=True)
-    avatar = models.ImageField(null=True, blank=True)
+    avatar = models.ImageField(default='download.jpeg' ,null=True, blank=True)
     start_date = models.DateTimeField(default=timezone.now)
     about = models.TextField(_(
         'about'), max_length=500, blank=True)

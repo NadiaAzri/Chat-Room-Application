@@ -4,6 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.forms import TextInput, Textarea, CharField
 from django import forms
 from django.db import models
+from modeltranslation.admin import TranslationAdmin
 
 
 class UserAdminConfig(UserAdmin):
@@ -28,5 +29,8 @@ class UserAdminConfig(UserAdmin):
          ),
     )
 
+class ProfileUserAdmin(UserAdminConfig, TranslationAdmin):
+    model = ProfileUser
 
-admin.site.register(ProfileUser, UserAdminConfig)
+# admin.site.unregister(ProfileUser)
+admin.site.register(ProfileUser, ProfileUserAdmin)
